@@ -1,0 +1,62 @@
+ 
+<thy-layout *ngIf="items.length > 0; else dataNotFound">
+  <thy-header class="header-with-baseline">
+    <ng-template #headerContent>
+      <thy-button thyType="primary" thySize="sm" (click)="scrollToToday()">Today</thy-button>
+      &nbsp; &nbsp; &nbsp;
+      <thy-button thyType="primary" thySize="sm" (click)="refresh()">Refresh</thy-button> 
+    </ng-template> 
+  </thy-header>
+  <thy-content>
+    <ngx-gantt
+      #gantt
+      [items]="items"
+      [baselineItems]="baselineItems"
+      [viewType]="viewType"
+      [draggable]="false"
+      [linkable]="false"
+      [selectable]="false"
+      [multiple]="true"
+      [viewOptions]="viewOptions"
+      [showToolbar]="isShowToolbarChecked"
+      [toolbarOptions]="toolbarOptions"
+      [loading]="loading"
+      [virtualScrollEnabled]="false" 
+      (viewChange)="viewChange($event)" 
+      [quickTimeFocus]="true"
+    >
+      <ngx-gantt-table
+        [draggable]="false"
+        [maxWidth]="800"
+        [dropEnterPredicate]="dropEnterPredicate"   
+      >
+        <ngx-gantt-column name="Title" width="350px" [showExpandIcon]="false">
+          <ng-template #cell let-item="item"> {{ item.title }} </ng-template>
+        </ngx-gantt-column>
+        <ngx-gantt-column name="Start Time" width="130px">
+          <ng-template #cell let-item="item">
+            {{ item.start * 1000 | date: 'yyyy-MM-dd' }}
+          </ng-template>
+        </ngx-gantt-column>
+        <ngx-gantt-column name="End Time" width="130px">
+          <ng-template #cell let-item="item">
+            {{ item.end * 1000 | date: 'yyyy-MM-dd' }}
+          </ng-template>
+        </ngx-gantt-column>
+      </ngx-gantt-table>
+
+      <ng-template #bar let-item="item">
+        <span style="color: #fff">&nbsp;&nbsp;{{ item.title }} </span>
+      </ng-template>
+    </ngx-gantt>
+  </thy-content>
+</thy-layout>
+ 
+
+<ng-template #dataNotFound>
+    <div class="card-body">
+        <div class="flex-grow-1 mt-5 mb-5 text-center">
+            <h6 class="text-muted mb-0"> ไม่มีข้อมูลแผนงาน!</h6> 
+        </div>  
+    </div> 
+</ng-template>

@@ -1,0 +1,37 @@
+<div class="gantt-table-header-container" syncScrollX="ganttTableXScroll" [style.width.px]="tableWidth" cdkScrollable>
+  @for (column of columns; track $index) {
+    <div class="gantt-table-column" [style.width]="column.columnWidth">
+      @if (column.headerTemplateRef) {
+        <ng-container [ngTemplateOutlet]="column.headerTemplateRef"> </ng-container>
+      } @else {
+        {{ column.name }}
+      }
+      <div
+        class="column-resize-handle"
+        cdkDrag
+        cdkDragLockAxis="x"
+        cdkDragBoundary=".gantt"
+        (cdkDragMoved)="onResizeMoved($event, column)"
+        (cdkDragStarted)="onResizeStarted($event)"
+        (cdkDragEnded)="onResizeEnded($event, column)"
+      ></div>
+    </div>
+  }
+  <div class="gantt-table-column gantt-table-column-placeholder"></div>
+</div>
+
+@if (gantt?.table?.settingsSlot) {
+  <ng-template [ngTemplateOutlet]="gantt?.table?.settingsSlot"></ng-template>
+}
+
+<div
+  class="table-resize-handle"
+  cdkDrag
+  cdkDragLockAxis="x"
+  cdkDragBoundary=".gantt"
+  (cdkDragMoved)="onResizeMoved($event)"
+  (cdkDragStarted)="onResizeStarted($event)"
+  (cdkDragEnded)="onOverallResizeEnded($event)"
+></div>
+
+<div #resizeLine class="table-resize-auxiliary-line"></div>

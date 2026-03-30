@@ -1,0 +1,36 @@
+import { Injectable } from "@angular/core";
+import { HttpClient, HttpHeaders } from '@angular/common/http'; 
+import { throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import { environment } from "example/src/environments/environment";
+
+@Injectable({
+  providedIn: 'root'
+})
+
+export class TimelineServices { 
+
+  private appUri = environment.appApi.endpoint;
+  private trackProjectApi = "trackproject";   
+
+  constructor(private http: HttpClient) {}  
+
+
+  getTimeline(projectId:number) {       
+    // #todo :azure token  
+    var param = "?projectId="+projectId;
+    const headers = new HttpHeaders({
+       'Authorization': `Bearer eyJ0eXAiOiJKV1QiLCJub25jZSI6IlgzYTJRWDMySWFTRjJKUDRBbnJEalBIenk4cW1jZmkxTUd6Z0t0NmVOSTQiLCJhbGciOiJSUzI1NiIsIng1dCI6InNNMV95QXhWOEdWNHlOLUI2ajJ4em1pazVBbyIsImtpZCI6InNNMV95QXhWOEdWNHlOLUI2ajJ4em1pazVBbyJ9.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTAwMDAtYzAwMC0wMDAwMDAwMDAwMDAiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC8yNjQ4MjljZi02YWJiLTQzNWYtOWNhNy0yMDU4YjZmMTZiYTkvIiwiaWF0IjoxNzcyNjc4NDYwLCJuYmYiOjE3NzI2Nzg0NjAsImV4cCI6MTc3MjY4MjUzMywiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IkFVUUF1LzhiQUFBQWhHWUNnbWlwRkx1ZnUxL2RJbGxpekRpRW5tSmpJNXkyMlFhR3QzODc0Ti82RTUwazU4VUtiN2M2YVNqd2lic2ZtYy9RaE5PVUt6emN0VzYwNFpZRXhBPT0iLCJhbXIiOlsicHdkIl0sImFwcF9kaXNwbGF5bmFtZSI6IkVSUC1Gcm9udGVuZCAoREVWKSIsImFwcGlkIjoiM2I0M2JjOTItMzNiMC00NWZlLWI0NjQtNmFiZWRhZDdlNDU3IiwiYXBwaWRhY3IiOiIwIiwiZ2l2ZW5fbmFtZSI6InRlc3RlcjAyIiwiaWR0eXAiOiJ1c2VyIiwiaXBhZGRyIjoiMjQwNTo5ODAwOmI4NjA6OTJmYToxMWNlOmQ3MjM6MjBkNjoyNmQ5IiwibmFtZSI6InRlc3RlcjAyIiwib2lkIjoiNTJhNWM4NDktODAyYS00NWI4LWFjYWMtZDU1NTM3ZjA2MTlmIiwib25wcmVtX3NpZCI6IlMtMS01LTIxLTQwMjE1MDE2NTMtNDA5NzM1MDg1OS0zODYyNjk4NjE2LTUzNDYiLCJwbGF0ZiI6IjMiLCJwdWlkIjoiMTAwMzIwMDUxOUM2OEVDQiIsInJoIjoiMS5BVllBenlsSUpydHFYME9jcHlCWXR2RnJxUU1BQUFBQUFBQUF3QUFBQUFBQUFBQUFBQTlXQUEuIiwic2NwIjoiZW1haWwgTWFpbC5TZW5kIE1haWwuU2VuZC5TaGFyZWQgVXNlci5EZWxldGVSZXN0b3JlLkFsbCBVc2VyLkVuYWJsZURpc2FibGVBY2NvdW50LkFsbCBVc2VyLkV4cG9ydC5BbGwgVXNlci5JbnZpdGUuQWxsIFVzZXIuTWFuYWdlSWRlbnRpdGllcy5BbGwgVXNlci5SZWFkIFVzZXIuUmVhZC5BbGwgVXNlci5SZWFkQmFzaWMuQWxsIFVzZXIuUmVhZFdyaXRlIFVzZXIuUmVhZFdyaXRlLkFsbCBVc2VyLlJldm9rZVNlc3Npb25zLkFsbCBwcm9maWxlIG9wZW5pZCIsInNpZCI6IjAwMmU5MWZhLWM0NWQtNTBjYi04ODk2LTdmNjdjNjRlYTdmMyIsInNpZ25pbl9zdGF0ZSI6WyJrbXNpIl0sInN1YiI6IlZ5X0g2dkVjTjY1TVVubC1wY2Y5ejRhREViaWg0WGdCMkJqR0FiWVBsQjgiLCJ0ZW5hbnRfcmVnaW9uX3Njb3BlIjoiQVMiLCJ0aWQiOiIyNjQ4MjljZi02YWJiLTQzNWYtOWNhNy0yMDU4YjZmMTZiYTkiLCJ1bmlxdWVfbmFtZSI6InRlc3RlcjAyQHNlYWNvbi5jby50aCIsInVwbiI6InRlc3RlcjAyQHNlYWNvbi5jby50aCIsInV0aSI6IjFVZHRvNGpLclVtOFNHTVJqaXNHQUEiLCJ2ZXIiOiIxLjAiLCJ3aWRzIjpbImI3OWZiZjRkLTNlZjktNDY4OS04MTQzLTc2YjE5NGU4NTUwOSJdLCJ4bXNfYWNkIjoxNzM3MzYyNjA3LCJ4bXNfYWN0X2ZjdCI6IjMgOSIsInhtc19mdGQiOiJhVjFHdUlPMXcxTVdYT3AzalNObG5VbG5aRUhELXRIb2JKd2poOS03eGswQmEyOXlaV0ZqWlc1MGNtRnNMV1J6YlhNIiwieG1zX2lkcmVsIjoiMSAyOCIsInhtc19zdCI6eyJzdWIiOiJreWlVcEMtVTVLVmtqRnU2TkxHLXNoM0RDeURNSTNGTnp1bU1OZEk2andFIn0sInhtc19zdWJfZmN0IjoiMTYgMyIsInhtc190Y2R0IjoxNjc3MjIwOTMwLCJ4bXNfdG50X2ZjdCI6IjMgMTAifQ.SjgAmLXm7ImUHMmrmbDC0hzwnrFgBR_dxfnifv4w8FN0EHHd1cs8-qAUAqb3AjffIUn1HE49r5I_9nIJBs6YrT4k9KsRRUINTcWaAzdkukXI-thjxmrn7Esp7xZBiNSuJTeUdHZL5itOJCoe8IfiK0cm9PRTfzWFCCxx-AflMqLTEQZtSqbaUTASPYPrFyixpNadEZQSN3uEZMSNOpJLJWwyRrbAFTfgojqw8q2TEv1FVlcd3dEV82R75KruH41A_h2_uuHdcf5KDRtpRiiXT4XJVomK1xIz5EeO39ufOSUCHZ0d4UfoYAIiYDmlf3CPxsMeog3Q0LmqLl7kgVxHEQ` 
+    });
+
+    return this.http.get(this.appUri+ "/" + this.trackProjectApi+"/timeline"+param, { headers }).pipe(
+        map((response: any) => { 
+            return response;
+        }),
+        catchError((error: any) => { 
+            return throwError(error);
+        })
+    );
+  }  
+ 
+}

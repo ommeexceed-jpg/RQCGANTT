@@ -1,0 +1,36 @@
+{
+  "name": "@worktile/gantt",
+  "version": "19.0.7",
+  "schematics": "./schematics/collection.json",
+  "author": "walkerkay001",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "sass": "./styles/index.scss"
+    },
+    "./styles/variables": {
+      "sass": "./styles/variables.scss"
+    },
+    "./styles/index": {
+      "sass": "./styles/index.scss"
+    },
+    "./styles/*": {
+      "sass": "./styles/*"
+    }
+  },
+  "scripts": {
+    "build": "../../node_modules/.bin/tsc -p tsconfig.schematics.json",
+    "copy:schemas": "cp --parents schematics/*/schema.json ../../dist/gantt/",
+    "copy:files": "cp --parents -p schematics/*/files/** ../../dist/gantt/",
+    "copy:collection": "cp schematics/collection.json ../../dist/gantt/schematics/collection.json",
+    "postbuild": "npm run copy:schemas && npm run copy:files && npm run copy:collection"
+  },
+  "peerDependencies": {
+    "@angular/common": ">=19.0.0",
+    "@angular/core": ">=19.0.0",
+    "@angular/cdk": ">=19.0.0",
+    "rxjs": "^6.5.0 || ^7.0.0",
+    "date-fns": ">=4.0.0",
+    "@date-fns/tz": ">=1.0.0"
+  }
+}

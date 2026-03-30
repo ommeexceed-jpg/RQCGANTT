@@ -1,0 +1,136 @@
+{
+  "name": "@worktile/gantt",
+  "version": "19.0.7",
+  "author": "walkerkay001",
+  "license": "MIT",
+  "description": "A modern and powerful gantt chart component for Angular",
+  "keywords": [
+    "gantt",
+    "angular gantt",
+    "ngx gantt"
+  ],
+  "scripts": {
+    "ng": "ng",
+    "husky": "husky",
+    "commitlint": "commitlint",
+    "lint-staged": "lint-staged",
+    "start": "docgeni serve",
+    "build:docs": "docgeni build",
+    "build:docs:gh-pages": "docgeni build --base-href /ngx-gantt/ && echo '' > dist/example/.nojekyll && npm run create-404-page",
+    "create-404-page": "cp dist/example/index.html dist/example/404.html",
+    "build": "npm run build:lib && npm run build:styles",
+    "build:lib": "ng build gantt --configuration production",
+    "build:lib:scss": "scss-bundle -c scss-bundle.config.json",
+    "build:styles": "cpx \"./packages/gantt/src/**/*.scss\" dist/gantt",
+    "test": "ng test",
+    "lint": "ng lint",
+    "release": "wpm release --release-branch-format release-auto-v{{version}}",
+    "release-next": "wpm release --release-branch-format release-auto-next-v{{version}}",
+    "pub-only": "cd dist/gantt && npm publish --access=public",
+    "pub": "wpm publish && npm run pub-only",
+    "pub-next": "wpm publish && npm run pub-next-only",
+    "pub-next-only": "npm run pub-next-gantt-only",
+    "pub-next-gantt-only": "cd ./dist/gantt && npm publish --tag next",
+    "report-coverage": "cat ./coverage/gantt/lcov.info | coveralls",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s --pkg ./packages/gantt/package.json",
+    "contributors:init": "all-contributors init",
+    "contributors:add": "all-contributors add",
+    "contributors:generate": "all-contributors generate",
+    "postinstall": "husky install"
+  },
+  "dependencies": {
+    "@angular/animations": "^19.2.3",
+    "@angular/cdk": "^19.2.0",
+    "@angular/common": "^19.2.3",
+    "@angular/compiler": "^19.2.3",
+    "@angular/core": "^19.2.3",
+    "@angular/forms": "^19.2.3",
+    "@angular/platform-browser": "^19.2.3",
+    "@angular/platform-browser-dynamic": "^19.2.3",
+    "@angular/router": "^19.2.3",
+    "@date-fns/tz": "^1.2.0",
+    "date-fns": "^4.1.0",
+    "html2canvas": "1.0.0-rc.7",
+    "rxjs": "^7.5.5",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.15.0"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^19.2.4",
+    "@angular-eslint/builder": "19.2.1",
+    "@angular-eslint/eslint-plugin": "19.2.1",
+    "@angular-eslint/eslint-plugin-template": "19.2.1",
+    "@angular-eslint/schematics": "19.2.1",
+    "@angular-eslint/template-parser": "19.2.1",
+    "@angular/cli": "^19.2.4",
+    "@angular/compiler-cli": "^19.2.3",
+    "@angular/language-service": "^19.2.3",
+    "@commitlint/cli": "^16.2.1",
+    "@commitlint/config-conventional": "^16.2.1",
+    "@docgeni/cli": "~2.5.0-next.0",
+    "@docgeni/template": "~2.5.0-next.0",
+    "@types/jasmine": "~3.6.0",
+    "@types/node": "^12.11.1",
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.2.0",
+    "@worktile/pkg-manager": "^0.0.11",
+    "all-contributors-cli": "^6.6.0",
+    "concurrently": "^5.2.0",
+    "conventional-changelog-cli": "^2.0.12",
+    "coveralls": "^3.0.6",
+    "cpx": "^1.5.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-rxjs": "^5.0.3",
+    "fs-extra": "^9.0.0",
+    "husky": "^7.0.4",
+    "jasmine-core": "~4.5.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.1.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.0.0",
+    "lint-staged": "^12.3.7",
+    "ng-packagr": "^19.2.0",
+    "ngx-tethys": "^19.0.1",
+    "prettier": "^3.5.3",
+    "scss-bundle": "^3.1.2",
+    "standard-version": "^8.0.1",
+    "typescript": "~5.5.4"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "lint-staged": {
+    "*.{html,scss,js,ts,md}": [
+      "prettier --write"
+    ]
+  },
+  "standard-version": {
+    "bumpFiles": [
+      "package.json",
+      "package-lock.json",
+      "packages/gantt/package.json"
+    ],
+    "header": "Changelog\nAll notable changes to ngx-gantt will be documented in this file.\n",
+    "tagPrefix": "",
+    "skip": {
+      "tag": true,
+      "commit": true
+    }
+  },
+  "main": ".docgenirc.js",
+  "directories": {
+    "doc": "docs",
+    "example": "example"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/worktile/ngx-gantt.git"
+  },
+  "bugs": {
+    "url": "https://github.com/worktile/ngx-gantt/issues"
+  },
+  "homepage": "https://github.com/worktile/ngx-gantt#readme"
+}
