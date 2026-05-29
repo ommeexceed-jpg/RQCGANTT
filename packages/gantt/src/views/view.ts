@@ -4,7 +4,6 @@ import { GanttViewType } from '../class';
 import { GanttDatePoint } from '../class/date-point';
 import { GanttDateFormat } from '../gantt.config';
 import { GanttDate, GanttDateUtil, differenceInDays } from '../utils/date';
-import { zhHansLocale } from '../i18n';
 
 export const primaryDatePointTop = '40%';
 

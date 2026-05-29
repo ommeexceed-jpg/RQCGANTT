@@ -10,31 +10,31 @@ export class AppExampleComponentsComponent implements OnInit {
     menus: DocItem[] = [
         {
             id: 'basic',
-            title: '基本使用11',
+            title: 'Basic Usage',
             subtitle: 'Basic',
             path: 'basic'
         },
         {
             id: 'groups',
-            title: '分组展示22',
+            title: 'Group Display',
             subtitle: 'Groups',
             path: 'groups'
         },
         {
             id: 'virtual-scroll',
-            title: '虚拟滚动33',
+            title: 'Virtual Scroll',
             subtitle: 'Virtual Scroll',
             path: 'virtual-scroll'
         },
         {
             id: 'custom-view',
-            title: '自定义视图',
+            title: 'Custom View',
             subtitle: 'Custom View',
             path: 'custom-view'
         },
         {
             id: 'advanced',
-            title: '高级使用',
+            title: 'Advanced Usage',
             subtitle: 'Advanced',
             path: 'advanced'
         }

@@ -13,23 +13,23 @@ import { random, randomGroupsAndItems, randomItems } from '../helper';
 export class AppGanttGroupsExampleComponent implements OnInit {
     views = [
         {
-            name: '日',
+            name: 'Day',
             value: GanttViewType.day
         },
         {
-            name: '周',
+            name: 'Week',
             value: GanttViewType.week
         },
         {
-            name: '月',
+            name: 'Month',
             value: GanttViewType.month
         },
         {
-            name: '季',
+            name: 'Quarter',
             value: GanttViewType.quarter
         },
         {
-            name: '年',
+            name: 'Year',
             value: GanttViewType.year
         }
     ];

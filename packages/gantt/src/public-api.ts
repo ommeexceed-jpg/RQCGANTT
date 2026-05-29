@@ -20,8 +20,6 @@ export {
     GanttI18nLocaleConfig,
     GanttI18nLocale,
     GANTT_I18N_LOCALE_TOKEN,
-    zhHansLocale,
-    zhHantLocale,
     enUsLocale,
     jaJpLocale,
     deDeLocale,

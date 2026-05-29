@@ -80,30 +80,30 @@ export class AppGanttCustomViewExampleComponent implements OnInit {
     ngOnInit(): void {}
 
     barClick(event: GanttBarClickEvent) {
-        this.thyNotify.info('Event: barClick', `你点击了 [${event.item.title}]`);
+        this.thyNotify.info('Event: barClick', `You clicked [${event.item.title}]`);
     }
 
     lineClick(event: GanttLineClickEvent) {
-        this.thyNotify.info('Event: lineClick', `你点击了 ${event.source.title} 到 ${event.target.title} 的关联线`);
+        this.thyNotify.info('Event: lineClick', `You clicked the link from ${event.source.title} to ${event.target.title}`);
     }
 
     dragMoved(event: GanttDragEvent) {}
 
     dragEnded(event: GanttDragEvent) {
-        this.thyNotify.info('Event: dragEnded', `修改了 [${event.item.title}] 的时间`);
+        this.thyNotify.info('Event: dragEnded', `Updated the schedule for [${event.item.title}]`);
         this.items = [...this.items];
     }
 
     selectedChange(event: GanttSelectedEvent) {
         this.thyNotify.info(
             'Event: selectedChange',
-            `当前选中的 item 的 id 为 ${(event.selectedValue as GanttItem[]).map((item) => item.id).join('、')}`
+            `Current selected item ids: ${(event.selectedValue as GanttItem[]).map((item) => item.id).join(', ')}`
         );
     }
 
     linkDragEnded(event: GanttLinkDragEvent) {
         this.items = [...this.items];
-        this.thyNotify.info('Event: linkDragEnded', `创建了关联关系`);
+        this.thyNotify.info('Event: linkDragEnded', 'Created a dependency link');
     }
 
     weekendChange() {

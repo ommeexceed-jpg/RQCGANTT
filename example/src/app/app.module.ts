@@ -66,7 +66,7 @@ import { HttpClientModule } from '@angular/common/http';
             useFactory: () => {
                 const docgeniGlobalContext = inject(GlobalContext);
                 return {
-                    locale: docgeniGlobalContext.locale === 'en-us' ? GanttI18nLocale.enUs : GanttI18nLocale.zhHans
+                    locale: GanttI18nLocale.enUs
                 };
             }
         }

@@ -1,4 +1,4 @@
-import { zhHantLocale } from '../i18n';
+import { enUsLocale } from '../i18n';
 import { GanttViewType } from '../class';
 import { GanttDatePoint } from '../class/date-point';
 import { GanttDate, differenceInMinutes, eachDayOfInterval, eachHourOfInterval } from '../utils/date';
@@ -11,7 +11,7 @@ const viewOptions: GanttViewOptions = {
     datePrecisionUnit: 'minute',
     addAmount: 1,
     addUnit: 'week',
-    dateDisplayFormats: zhHantLocale.views.hour.dateFormats,
+    dateDisplayFormats: enUsLocale.views.hour.dateFormats,
     dragPreviewDateFormat: 'HH:mm'
 };
 

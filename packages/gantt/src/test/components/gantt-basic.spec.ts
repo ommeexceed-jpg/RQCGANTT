@@ -21,45 +21,45 @@ const mockItems = getMockItems();
 const mockBaselineItems = getMockBaselineItems();
 
 const localeConfig = {
-    id: GanttI18nLocale.zhHans,
+    id: GanttI18nLocale.enUs,
     views: {
         [GanttViewType.hour]: {
-            label: '小时',
+            label: 'Hourly',
             dateFormats: {
-                primary: 'M月d日',
+                primary: 'MMM d',
                 secondary: 'HH:mm'
             }
         },
         [GanttViewType.day]: {
-            label: '天',
+            label: 'Daily',
             dateFormats: {
                 primary: 'yyyy-MM',
                 secondary: 'd'
             }
         },
         [GanttViewType.week]: {
-            label: '周',
+            label: 'Weekly',
             dateFormats: {
                 primary: 'yyyy',
                 secondary: 'w'
             }
         },
         [GanttViewType.month]: {
-            label: '月',
+            label: 'Monthly',
             dateFormats: {
                 primary: `yyyy/QQQ`,
                 secondary: 'MM'
             }
         },
         [GanttViewType.quarter]: {
-            label: '季',
+            label: 'Quarterly',
             dateFormats: {
                 primary: 'yyyy',
                 secondary: `yyyy/QQQ`
             }
         },
         [GanttViewType.year]: {
-            label: '年',
+            label: 'Yearly',
             dateFormats: {
                 secondary: 'yyyy'
             }
@@ -154,7 +154,7 @@ describe('gantt-basic-component', () => {
                 {
                     provide: GANTT_GLOBAL_CONFIG,
                     useValue: {
-                        locale: GanttI18nLocale.zhHans,
+                        locale: GanttI18nLocale.enUs,
                         dateOptions: {},
                         styleOptions: {
                             headerHeight: 60,

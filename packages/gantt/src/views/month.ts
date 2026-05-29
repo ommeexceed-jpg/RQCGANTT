@@ -2,7 +2,7 @@ import { GanttView, GanttViewOptions, GanttViewDate, secondaryDatePointTop, prim
 import { GanttDate, differenceInCalendarQuarters, eachMonthOfInterval } from '../utils/date';
 import { GanttDatePoint } from '../class/date-point';
 import { GanttViewType } from '../class';
-import { zhHantLocale } from '../i18n';
+import { enUsLocale } from '../i18n';
 
 const viewOptions: GanttViewOptions = {
     start: new GanttDate().startOfQuarter().addQuarters(-1),
@@ -10,7 +10,7 @@ const viewOptions: GanttViewOptions = {
     cellWidth: 280,
     addAmount: 1,
     addUnit: 'quarter',
-    dateDisplayFormats: zhHantLocale.views.month.dateFormats
+    dateDisplayFormats: enUsLocale.views.month.dateFormats
 };
 
 export class GanttViewMonth extends GanttView {

@@ -2,7 +2,7 @@ import { GanttViewType } from '../class';
 import { GanttDatePoint } from '../class/date-point';
 import { eachWeekOfInterval, GanttDate } from '../utils/date';
 import { GanttView, GanttViewDate, GanttViewOptions, primaryDatePointTop, secondaryDatePointTop } from './view';
-import { zhHantLocale } from '../i18n';
+import { enUsLocale } from '../i18n';
 
 const viewOptions: GanttViewOptions = {
     cellWidth: 280,
@@ -10,7 +10,7 @@ const viewOptions: GanttViewOptions = {
     end: new GanttDate().endOfYear().endOfWeek(),
     addAmount: 1,
     addUnit: 'month',
-    dateDisplayFormats: zhHantLocale.views.week.dateFormats
+    dateDisplayFormats: enUsLocale.views.week.dateFormats
 };
 
 export class GanttViewWeek extends GanttView {

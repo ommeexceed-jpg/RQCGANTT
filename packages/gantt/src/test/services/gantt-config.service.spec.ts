@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { defaultConfig, GanttConfigService, GANTT_GLOBAL_CONFIG, GanttGlobalConfig } from '../../gantt.config';
-import { GANTT_I18N_LOCALE_TOKEN, GanttI18nLocale, zhHansLocale, zhHantLocale } from '../../i18n';
+import { GANTT_I18N_LOCALE_TOKEN, GanttI18nLocale, enUsLocale } from '../../i18n';
 import { GanttViewType } from '../../class';
 import { NgxGanttModule } from '../../gantt.module';
 import { CommonModule } from '@angular/common';
@@ -77,14 +77,14 @@ describe('#GanttConfigService', () => {
 
     describe('#custom locale', () => {
         const localeConfig = {
-            id: GanttI18nLocale.zhHans,
+            id: GanttI18nLocale.enUs,
             views: {
-                ...zhHansLocale.views,
+                ...enUsLocale.views,
                 [GanttViewType.day]: {
                     label: 'Day',
                     dateFormats: {
                         primary: 'yyyy MM',
-                        secondary: 'd天'
+                        secondary: "'Day' d"
                     }
                 }
             }
@@ -94,7 +94,7 @@ describe('#GanttConfigService', () => {
             id: 'customLocale',
             dateLocale: zhCN,
             views: {
-                ...zhHansLocale.views,
+                ...enUsLocale.views,
                 [GanttViewType.day]: {
                     label: 'Custom',
                     dateFormats: {
@@ -113,7 +113,7 @@ describe('#GanttConfigService', () => {
                     {
                         provide: GANTT_GLOBAL_CONFIG,
                         useValue: {
-                            locale: GanttI18nLocale.zhHans
+                            locale: GanttI18nLocale.enUs
                         }
                     },
                     {

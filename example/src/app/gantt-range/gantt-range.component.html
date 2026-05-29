@@ -1,14 +1,14 @@
 <div class="gantt-demo-header">
   <div class="header-section">
-    <span class="header-section-title">视图：</span>
+    <span class="header-section-title">View:</span>
     <span class="header-section-content">
-      <input id="day" type="radio" value="day" name="view-type" [(ngModel)]="options.viewType" /> <label for="day">日</label>
-      <input id="month" type="radio" value="month" name="view-type" [(ngModel)]="options.viewType" /> <label for="month">月</label>
-      <input id="quarter" type="radio" value="quarter" name="view-type" [(ngModel)]="options.viewType" /> <label for="quarter">季度</label>
+      <input id="day" type="radio" value="day" name="view-type" [(ngModel)]="options.viewType" /> <label for="day">Day</label>
+      <input id="month" type="radio" value="month" name="view-type" [(ngModel)]="options.viewType" /> <label for="month">Month</label>
+      <input id="quarter" type="radio" value="quarter" name="view-type" [(ngModel)]="options.viewType" /> <label for="quarter">Quarter</label>
     </span>
   </div>
   <div class="header-section">
-    <span class="header-section-title">是否可拖拽：</span>
+    <span class="header-section-title">Draggable:</span>
     <span class="header-section-content">
       <input type="checkbox" [(ngModel)]="options.draggable" />
     </span>
@@ -16,17 +16,17 @@
 
   <div class="header-section">
     <span class="header-section-content">
-      <button (click)="gantt.expandAll()">全部展开</button>
+      <button (click)="gantt.expandAll()">Expand all</button>
     </span>
   </div>
   <div class="header-section">
     <span class="header-section-content">
-      <button (click)="gantt.collapseAll()">全部收起</button>
+      <button (click)="gantt.collapseAll()">Collapse all</button>
     </span>
   </div>
   <div class="header-section">
     <span class="header-section-content">
-      <button (click)="print('gantt-range')">导出为图片</button>
+      <button (click)="print('gantt-range')">Export as image</button>
     </span>
   </div>
 </div>

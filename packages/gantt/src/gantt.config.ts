@@ -3,8 +3,7 @@ import { Locale, setDefaultOptions } from 'date-fns';
 import { GanttLinkLineType, GanttLinkOptions, GanttLinkType } from './class/link';
 import { Injectable } from '@angular/core';
 import { GANTT_I18N_LOCALE_TOKEN, GanttI18nLocaleConfig, GanttI18nLocale } from './i18n/i18n';
-import zhHans from './i18n/locales/zh-hans';
-import zhHant from './i18n/locales/zh-hant';
+import enUs from './i18n/locales/en-us';
 import { setDefaultTimeZone } from './utils/date';
 
 export interface GanttDateFormat {
@@ -44,7 +43,7 @@ export interface GanttGlobalConfig {
 }
 
 export const defaultConfig: GanttGlobalConfig = {
-    locale: GanttI18nLocale.zhHans,
+    locale: GanttI18nLocale.enUs,
     linkOptions: {
         dependencyTypes: [GanttLinkType.fs],
         showArrow: false,
@@ -83,10 +82,7 @@ export class GanttConfigService {
                 result[localeConfig.id] = localeConfig; // 这里使用 `id` 作为 key
                 return result;
             },
-            {
-                ['zh-cn']: zhHans,
-                ['zh-tw']: zhHant
-            } as Record<GanttI18nLocale | string, GanttI18nLocaleConfig>
+            {} as Record<GanttI18nLocale | string, GanttI18nLocaleConfig>
         );
 
         if (this.config.dateOptions?.timeZone) {
@@ -104,7 +100,7 @@ export class GanttConfigService {
     }
 
     private getLocaleConfig() {
-        return this.i18nLocales[this.config.locale] ?? this.i18nLocales[this.config.locale.toLowerCase()] ?? zhHans;
+        return this.i18nLocales[this.config.locale] ?? this.i18nLocales[this.config.locale.toLowerCase()] ?? enUs;
     }
 
     getViewsLocale(): GanttI18nLocaleConfig['views'] {

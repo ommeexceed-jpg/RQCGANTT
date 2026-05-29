@@ -1,4 +1,4 @@
-import { zhHantLocale } from '../i18n';
+import { enUsLocale } from '../i18n';
 import { GanttViewType } from '../class';
 import { GanttDatePoint } from '../class/date-point';
 import { GanttDate, eachDayOfInterval, eachWeekOfInterval } from '../utils/date';
@@ -10,7 +10,7 @@ const viewOptions: GanttViewOptions = {
     end: new GanttDate().endOfYear().endOfWeek(),
     addAmount: 1,
     addUnit: 'month',
-    dateDisplayFormats: zhHantLocale.views.day.dateFormats
+    dateDisplayFormats: enUsLocale.views.day.dateFormats
 };
 
 export class GanttViewDay extends GanttView {

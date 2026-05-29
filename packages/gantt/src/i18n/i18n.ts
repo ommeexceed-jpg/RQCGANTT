@@ -3,8 +3,6 @@ import { Locale as DateFnsLocale } from 'date-fns';
 import { GanttViewType } from '../class';
 
 export enum GanttI18nLocale {
-    zhHans = 'zh-hans',
-    zhHant = 'zh-hant',
     enUs = 'en-us',
     deDe = 'de-de',
     jaJp = 'ja-jp',

@@ -55,13 +55,13 @@ export class GanttViewCustom extends GanttView {
         const days = eachDayOfInterval({ start: this.start.value, end: this.end.value });
         const points: GanttDatePoint[] = [];
         const dayInWeekMap = {
-            '1': '周一',
-            '2': '周二',
-            '3': '周三',
-            '4': '周四',
-            '5': '周五',
-            '6': '周六',
-            '0': '周日'
+            '1': 'Mon',
+            '2': 'Tue',
+            '3': 'Wed',
+            '4': 'Thu',
+            '5': 'Fri',
+            '6': 'Sat',
+            '0': 'Sun'
         };
         for (let i = 0; i < days.length; i++) {
             const start = new GanttDate(days[i]);

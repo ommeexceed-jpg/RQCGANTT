@@ -3,7 +3,7 @@ import { GanttDate } from '../utils/date';
 import { GanttDatePoint } from '../class/date-point';
 import { eachYearOfInterval, differenceInCalendarQuarters } from 'date-fns';
 import { GanttViewType } from '../class';
-import { zhHantLocale } from '../i18n';
+import { enUsLocale } from '../i18n';
 
 const viewOptions: GanttViewOptions = {
     start: new GanttDate().addYears(-1).startOfYear(),
@@ -13,7 +13,7 @@ const viewOptions: GanttViewOptions = {
     cellWidth: 500,
     addAmount: 1,
     addUnit: 'year',
-    dateDisplayFormats: zhHantLocale.views.quarter.dateFormats
+    dateDisplayFormats: enUsLocale.views.quarter.dateFormats
 };
 
 export class GanttViewQuarter extends GanttView {
