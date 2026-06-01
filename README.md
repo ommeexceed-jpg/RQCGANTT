@@ -130,6 +130,6 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 1# ng build example --configuration=production --base-href=/rqcgantt
 2# copy pakage\gannt to dist\example
 3# replace all path index.html add rqcweb
-src="  -> src="/rqcweb/
-href="  -> href="/rqcweb/
+src="  -> src="/rqcgantt/
+href="  -> href="/rqcgantt/
 
