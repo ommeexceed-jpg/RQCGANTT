@@ -46,6 +46,7 @@ export class AppGanttExampleComponent implements OnInit, AfterViewInit {
     };
 
     projectId:number;
+    projectType = 'SC';
 
     viewType: GanttViewType = GanttViewType.month;
 
@@ -89,6 +90,9 @@ export class AppGanttExampleComponent implements OnInit, AfterViewInit {
         this.route.queryParams.subscribe(params => {
 
             this.projectId = params.projectId;    
+            this.projectType = String(
+                params.projectType ?? (String(params.workspace ?? '').toUpperCase() === 'SF' ? 'SF' : 'SC')
+            ).trim().toUpperCase();
             if(this.projectId>0){ 
                 this.initalPage();
             }
@@ -316,10 +320,13 @@ export class AppGanttExampleComponent implements OnInit, AfterViewInit {
 
     initalPage():void {
         this.loading = true;
-        this.timelineServices.getTimeline(this.projectId).subscribe({
+        this.timelineServices.getTimeline(this.projectId, this.projectType).subscribe({
         next: resp => { 
             if(resp.data!=null && resp.data!=undefined && resp.data!=""){
-                this.items = resp.data;
+                const timelineItems = resp.data as GanttItem[];
+                this.items = this.projectType === 'SF'
+                    ? timelineItems.filter(item => this.isSfTimelineItem(item))
+                    : timelineItems;
 
                 this.items.forEach((item, index) => {
                     if (item.start == null) {
@@ -338,6 +345,11 @@ export class AppGanttExampleComponent implements OnInit, AfterViewInit {
             console.error('Error loading timeline:', err);
         }
         }); 
+    }
+
+    private isSfTimelineItem(item: GanttItem): boolean {
+        const match = String(item?.title ?? '').match(/^\s*\((\d+(?:\.\d+)?)\)/);
+        return match !== null && Number(match[1]) <= 6.5;
     }
 
     private flattenItems(items: GanttItem[], level = 0): Array<GanttItem & { level: number }> {
