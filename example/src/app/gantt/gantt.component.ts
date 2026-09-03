@@ -58,6 +58,9 @@ export class AppGanttExampleComponent implements OnInit, AfterViewInit {
 
     loading = false;
 
+    private timelineAuthToken: string | null = null;
+    private timelineAuthReady = false;
+
     items: GanttItem[] = [];
 
     baselineItems: GanttBaselineItem[] = [];
@@ -85,15 +88,35 @@ export class AppGanttExampleComponent implements OnInit, AfterViewInit {
         private route: ActivatedRoute,
     ) {}
 
+    private readonly onTimelineAuthMessage = (event: MessageEvent) => {
+        const parentOrigin = document.referrer ? new URL(document.referrer).origin : '';
+        if (!parentOrigin || event.origin !== parentOrigin || event.source !== window.parent) {
+            return;
+        }
+
+        const message = event.data;
+        if (message?.type !== 'RQC_TIMELINE_AUTH') {
+            return;
+        }
+
+        this.timelineAuthToken = typeof message.token === 'string' && message.token.trim()
+            ? message.token.trim()
+            : null;
+        this.timelineAuthReady = true;
+        if (this.projectId > 0) {
+            this.initalPage();
+        }
+    };
+
     ngOnInit(): void {
-        
+        window.addEventListener('message', this.onTimelineAuthMessage);
         this.route.queryParams.subscribe(params => {
 
             this.projectId = params.projectId;    
             this.projectType = String(
                 params.projectType ?? (String(params.workspace ?? '').toUpperCase() === 'SF' ? 'SF' : 'SC')
             ).trim().toUpperCase();
-            if(this.projectId>0){ 
+            if(this.projectId>0 && this.timelineAuthReady){
                 this.initalPage();
             }
                
@@ -102,18 +125,12 @@ export class AppGanttExampleComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-
-        const now = new Date(); 
-        const utcMs = now.getTime(); 
-        // ถ้าอยากบังคับ GMT+7 (Bangkok)
-        const offsetMs = 7 * 60 * 60 * 1000; // 7 ชั่วโมง
-        const bkkUnixSec = Math.floor((utcMs + offsetMs) / 1000); 
-
-        setTimeout(() => this.ganttComponent.scrollToDate(bkkUnixSec), 200);
+        // The Gantt component is conditionally rendered only after data loads.
+        // Initial empty state must not dereference the unavailable ViewChild.
     }
 
     scrollToToday() {
-        this.ganttComponent.scrollToToday();
+        this.ganttComponent?.scrollToToday();
     }
  
     selectView(type: GanttViewType) {
@@ -320,31 +337,37 @@ export class AppGanttExampleComponent implements OnInit, AfterViewInit {
 
     initalPage():void {
         this.loading = true;
-        this.timelineServices.getTimeline(this.projectId, this.projectType).subscribe({
+        this.timelineServices.getTimeline(this.projectId, this.projectType, this.timelineAuthToken).subscribe({
         next: resp => { 
-            if(resp.data!=null && resp.data!=undefined && resp.data!=""){
-                const timelineItems = resp.data as GanttItem[];
-                this.items = this.projectType === 'SF'
-                    ? timelineItems.filter(item => this.isSfTimelineItem(item))
-                    : timelineItems;
+            const timelineItems = Array.isArray(resp?.data) ? resp.data as GanttItem[] : [];
+            this.items = this.projectType === 'SF'
+                ? timelineItems.filter(item => this.isSfTimelineItem(item))
+                : timelineItems;
 
-                this.items.forEach((item, index) => {
-                    if (item.start == null) {
-                        this.items[index].start = undefined;
-                    }
-                    if (item.end == null) {
-                        this.items[index].end = undefined;
-                    }
-                });
-            } 
+            this.items.forEach((item, index) => {
+                if (item.start == null) {
+                    this.items[index].start = undefined;
+                }
+                if (item.end == null) {
+                    this.items[index].end = undefined;
+                }
+            });
 
             this.loading = false;
+            if (this.items.length) {
+                const bkkUnixSec = Math.floor((Date.now() + 7 * 60 * 60 * 1000) / 1000);
+                setTimeout(() => this.ganttComponent?.scrollToDate(bkkUnixSec), 0);
+            }
         },
         error: err => {
             this.loading = false;
             console.error('Error loading timeline:', err);
         }
         }); 
+    }
+
+    ngOnDestroy(): void {
+        window.removeEventListener('message', this.onTimelineAuthMessage);
     }
 
     private isSfTimelineItem(item: GanttItem): boolean {
