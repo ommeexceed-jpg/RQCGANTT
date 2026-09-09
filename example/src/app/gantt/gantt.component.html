@@ -1,4 +1,11 @@
  
+<ng-container *ngIf="loading; else loadedTimeline">
+  <div class="timeline-loading" aria-label="Loading timeline">
+    <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+  </div>
+</ng-container>
+
+<ng-template #loadedTimeline>
 <thy-layout *ngIf="items.length > 0; else dataNotFound">
   <thy-header class="header-with-baseline">
     <ng-template #headerContent>
@@ -53,6 +60,7 @@
     </ngx-gantt>
   </thy-content>
 </thy-layout>
+</ng-template>
  
 
 <ng-template #dataNotFound>
