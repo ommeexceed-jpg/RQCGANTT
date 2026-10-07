@@ -106,6 +106,31 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "uat": {
+              "fileReplacements": [
+                {
+                  "replace": "example/src/environments/environment.ts",
+                  "with": "example/src/environments/environment.uat.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
             }
           },
           "defaultConfiguration": ""
@@ -118,6 +143,9 @@
           "configurations": {
             "production": {
               "buildTarget": "example:build:production"
+            },
+            "uat": {
+              "buildTarget": "example:build:uat"
             }
           }
         },

@@ -127,9 +127,6 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 [MIT License](https://github.com/worktile/ngx-gantt/blob/master/LICENSE)
 
 ## publish 
-1# ng build example --configuration=production --base-href=/rqcgantt
+1# ng build example --configuration=production --base-href=/RQCGANTT/
 2# copy pakage\gannt to dist\example
-3# replace all path index.html add rqcweb
-src="  -> src="/rqcgantt/
-href="  -> href="/rqcgantt/
-
+3# Do not globally replace src/href in index.html; Angular generates paths from --base-href.

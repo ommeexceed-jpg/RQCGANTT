@@ -46,6 +46,8 @@ export class AppGanttExampleComponent implements OnInit, AfterViewInit {
     };
 
     projectId:number;
+    projectType = 'SC';
+    projectCode = '';
 
     viewType: GanttViewType = GanttViewType.month;
 
@@ -56,6 +58,11 @@ export class AppGanttExampleComponent implements OnInit, AfterViewInit {
     isShowToolbarChecked = true;
 
     loading = false;
+
+    private timelineAuthToken: string | null = null;
+    private timelineAuthReady = false;
+    private timelineKey = '';
+    private timelineRequestVersion = 0;
 
     items: GanttItem[] = [];
 
@@ -84,12 +91,84 @@ export class AppGanttExampleComponent implements OnInit, AfterViewInit {
         private route: ActivatedRoute,
     ) {}
 
+    private readonly onTimelineAuthMessage = (event: MessageEvent) => {
+        const parentOrigin = document.referrer ? new URL(document.referrer).origin : '';
+        if (!parentOrigin || event.origin !== parentOrigin || event.source !== window.parent) {
+            return;
+        }
+
+        const message = event.data;
+        if (message?.type !== 'RQC_TIMELINE_AUTH') {
+            return;
+        }
+
+        this.timelineAuthToken = typeof message.token === 'string' && message.token.trim()
+            ? message.token.trim()
+            : null;
+        this.timelineAuthReady = true;
+        console.debug('[Timeline] auth handshake received', {
+            hasToken: Boolean(this.timelineAuthToken),
+            projectId: this.projectId,
+            projectType: this.projectType,
+            projectCode: this.projectCode
+        });
+        if (this.projectId > 0) {
+            this.initalPage();
+        }
+    };
+
+    private notifyParentReady(): void {
+        const parentOrigin = document.referrer ? new URL(document.referrer).origin : '';
+        if (!parentOrigin || window.parent === window) {
+            return;
+        }
+
+        window.parent.postMessage({ type: 'RQC_TIMELINE_READY' }, parentOrigin);
+    }
+
     ngOnInit(): void {
-        
+        window.addEventListener('message', this.onTimelineAuthMessage);
+        // The parent may send auth during iframe load before this listener is
+        // registered. Ask the parent to resend once the child is ready.
+        this.notifyParentReady();
         this.route.queryParams.subscribe(params => {
 
-            this.projectId = params.projectId;    
-            if(this.projectId>0){ 
+            const nextProjectId = Number(params.projectId);
+            const nextProjectType = String(
+                params.projectType ?? (String(params.workspace ?? '').toUpperCase() === 'SF' ? 'SF' : 'SC')
+            ).trim().toUpperCase();
+            const nextProjectCode = String(params.projectCode ?? '').trim();
+            const nextTimelineKey = `${nextProjectType}|${nextProjectId}|${nextProjectCode}`;
+            const modeOrProjectChanged = this.timelineKey !== '' && this.timelineKey !== nextTimelineKey;
+
+            this.projectId = nextProjectId;
+            this.projectType = nextProjectType;
+            this.projectCode = nextProjectCode;
+            this.timelineKey = nextTimelineKey;
+
+            console.debug('[Timeline] route initialized', {
+                projectId: this.projectId,
+                projectType: this.projectType,
+                projectCode: this.projectCode,
+                timelineAuthReady: this.timelineAuthReady
+            });
+
+            // Query parameters are available now. Re-announce readiness so
+            // the parent cannot send the auth message before this component
+            // has the project identity needed by the API call.
+            this.notifyParentReady();
+
+            if (modeOrProjectChanged) {
+                // Do not leave rows from the previous mode/project visible
+                // while the new request is loading.
+                this.items = [];
+                this.loading = false;
+                this.timelineRequestVersion++;
+            }
+
+            const hasTimelineIdentity = this.projectId > 0
+                || (this.projectType === 'SF' && this.projectCode.length > 0);
+            if(hasTimelineIdentity && this.timelineAuthReady){
                 this.initalPage();
             }
                
@@ -98,18 +177,12 @@ export class AppGanttExampleComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-
-        const now = new Date(); 
-        const utcMs = now.getTime(); 
-        // ถ้าอยากบังคับ GMT+7 (Bangkok)
-        const offsetMs = 7 * 60 * 60 * 1000; // 7 ชั่วโมง
-        const bkkUnixSec = Math.floor((utcMs + offsetMs) / 1000); 
-
-        setTimeout(() => this.ganttComponent.scrollToDate(bkkUnixSec), 200);
+        // The Gantt component is conditionally rendered only after data loads.
+        // Initial empty state must not dereference the unavailable ViewChild.
     }
 
     scrollToToday() {
-        this.ganttComponent.scrollToToday();
+        this.ganttComponent?.scrollToToday();
     }
  
     selectView(type: GanttViewType) {
@@ -315,29 +388,94 @@ export class AppGanttExampleComponent implements OnInit, AfterViewInit {
     }
 
     initalPage():void {
+        const requestVersion = ++this.timelineRequestVersion;
         this.loading = true;
-        this.timelineServices.getTimeline(this.projectId).subscribe({
+        console.debug('[Timeline] requesting chart data', {
+            requestVersion,
+            projectId: this.projectId,
+            projectType: this.projectType,
+            projectCode: this.projectCode,
+            hasToken: Boolean(this.timelineAuthToken)
+        });
+        this.timelineServices.getTimeline(this.projectId, this.projectType, this.timelineAuthToken, this.projectCode).subscribe({
         next: resp => { 
-            if(resp.data!=null && resp.data!=undefined && resp.data!=""){
-                this.items = resp.data;
+            if (requestVersion !== this.timelineRequestVersion) {
+                return;
+            }
+            const timelineItems = Array.isArray(resp?.data) ? resp.data as GanttItem[] : [];
+            // The API endpoint is already selected by project mode. Do not
+            // apply a hard-coded SF line-number filter here: an SF project
+            // may have valid timeline rows outside the old <= 6.5 range.
+            // Keep only malformed rows out of the chart so one bad row cannot
+            // make the entire plan disappear.
+            this.items = this.normalizeTimelineItems(timelineItems);
 
-                this.items.forEach((item, index) => {
-                    if (item.start == null) {
-                        this.items[index].start = undefined;
-                    }
-                    if (item.end == null) {
-                        this.items[index].end = undefined;
-                    }
-                });
-            } 
+            console.debug('[Timeline] chart data received', {
+                requestVersion,
+                apiItemCount: timelineItems.length,
+                renderItemCount: this.items.length,
+                apiStatus: resp?.status,
+                apiMessage: resp?.msg ?? ''
+            });
 
             this.loading = false;
+            if (this.items.length) {
+                const bkkUnixSec = Math.floor((Date.now() + 7 * 60 * 60 * 1000) / 1000);
+                setTimeout(() => this.ganttComponent?.scrollToDate(bkkUnixSec), 0);
+            }
         },
         error: err => {
+            if (requestVersion !== this.timelineRequestVersion) {
+                return;
+            }
             this.loading = false;
             console.error('Error loading timeline:', err);
         }
         }); 
+    }
+
+    ngOnDestroy(): void {
+        window.removeEventListener('message', this.onTimelineAuthMessage);
+    }
+
+    private normalizeTimelineItems(items: GanttItem[]): GanttItem[] {
+        const usedIds = new Set<string>();
+        const result: GanttItem[] = [];
+
+        items.forEach((item, index) => {
+            if (!item) {
+                return;
+            }
+
+            const start = this.toUnixSeconds(item.start);
+            const rawEnd = this.toUnixSeconds(item.end);
+            if (start == null || rawEnd == null) {
+                return;
+            }
+
+            const end = Math.max(start, rawEnd);
+            const baseId = String(item.id ?? `timeline-${index}`);
+            let id = baseId;
+            let suffix = 1;
+            while (usedIds.has(id)) {
+                id = `${baseId}-${suffix++}`;
+            }
+            usedIds.add(id);
+
+            result.push({ ...item, id, start, end });
+        });
+
+        return result;
+    }
+
+    private toUnixSeconds(value?: number | Date): number | null {
+        if (value instanceof Date) {
+            const time = value.getTime();
+            return Number.isFinite(time) ? Math.floor(time / 1000) : null;
+        }
+
+        const numeric = Number(value);
+        return Number.isFinite(numeric) ? numeric : null;
     }
 
     private flattenItems(items: GanttItem[], level = 0): Array<GanttItem & { level: number }> {
