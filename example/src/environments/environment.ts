@@ -5,10 +5,11 @@
 export const environment = {
   production: false,
   appApi : {
-    root: 'http://localhost/RQCAPI',
+    // Local RQC API started from the current source/clone under test.
+    root: 'http://localhost:5245/',
     version: 'v1',
-    endpoint: 'http://localhost/RQCAPI/v1/api',
-    timeline: 'http://localhost/RQCGANTT/'
+    endpoint: 'http://localhost:5245/v1/api',
+    timeline: 'http://localhost:52188/'
   }
 };
 

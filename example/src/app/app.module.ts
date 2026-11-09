@@ -7,7 +7,6 @@ import { ThySwitchModule } from 'ngx-tethys/switch';
 import { ThyNotifyModule } from 'ngx-tethys/notify';
 import { ThyDatePickerModule } from 'ngx-tethys/date-picker';
 import { inject, NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
 import { GANTT_GLOBAL_CONFIG, GanttI18nLocale, NgxGanttModule } from 'ngx-gantt';
 import { AppComponent } from './app.component';
 import { AppGanttExampleComponent } from './gantt/gantt.component';
@@ -49,7 +48,6 @@ import { HttpClientModule } from '@angular/common/http';
         DocgeniTemplateModule,
         NgxGanttModule,
         AppRoutingModule,
-        RouterModule.forRoot([]),
         ThyButtonModule,
         ThyNavModule,
         ThyLayoutModule,

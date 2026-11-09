@@ -24,6 +24,7 @@ import { delay } from 'rxjs/operators';
 import { random, randomItems } from '../helper';
 import { TimelineServices } from '../services/timeline.service';
 import { ActivatedRoute } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 const cacheKeys = 'GANTT_TABLE_KEYS';
 
@@ -60,8 +61,13 @@ export class AppGanttExampleComponent implements OnInit, AfterViewInit {
     loading = false;
 
     private timelineAuthToken: string | null = null;
-    private timelineAuthReady = false;
+    // Localhost API has an explicit loopback-only smoke identity. Do not make
+    // the local chart depend on postMessage timing; non-local environments
+    // still require the parent authentication handshake before loading data.
+    private timelineAuthReady = !environment.production
+        && ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname.toLowerCase());
     private timelineKey = '';
+    private requestedTimelineKey = '';
     private timelineRequestVersion = 0;
 
     items: GanttItem[] = [];
@@ -112,9 +118,7 @@ export class AppGanttExampleComponent implements OnInit, AfterViewInit {
             projectType: this.projectType,
             projectCode: this.projectCode
         });
-        if (this.projectId > 0) {
-            this.initalPage();
-        }
+        this.startTimelineRequestWhenReady();
     };
 
     private notifyParentReady(): void {
@@ -128,9 +132,6 @@ export class AppGanttExampleComponent implements OnInit, AfterViewInit {
 
     ngOnInit(): void {
         window.addEventListener('message', this.onTimelineAuthMessage);
-        // The parent may send auth during iframe load before this listener is
-        // registered. Ask the parent to resend once the child is ready.
-        this.notifyParentReady();
         this.route.queryParams.subscribe(params => {
 
             const nextProjectId = Number(params.projectId);
@@ -153,27 +154,40 @@ export class AppGanttExampleComponent implements OnInit, AfterViewInit {
                 timelineAuthReady: this.timelineAuthReady
             });
 
-            // Query parameters are available now. Re-announce readiness so
-            // the parent cannot send the auth message before this component
-            // has the project identity needed by the API call.
-            this.notifyParentReady();
-
             if (modeOrProjectChanged) {
                 // Do not leave rows from the previous mode/project visible
                 // while the new request is loading.
                 this.items = [];
                 this.loading = false;
+                this.requestedTimelineKey = '';
                 this.timelineRequestVersion++;
             }
 
-            const hasTimelineIdentity = this.projectId > 0
-                || (this.projectType === 'SF' && this.projectCode.length > 0);
-            if(hasTimelineIdentity && this.timelineAuthReady){
-                this.initalPage();
-            }
+            this.startTimelineRequestWhenReady();
+
+            // Ask for auth only after route identity has been stored. This
+            // prevents the parent handshake from arriving while projectId /
+            // projectCode are still empty and leaving the chart unloaded.
+            this.notifyParentReady();
                
         });
   
+    }
+
+    private startTimelineRequestWhenReady(): void {
+        const hasTimelineIdentity = this.projectId > 0
+            || (this.projectType === 'SF' && this.projectCode.length > 0);
+        if (!this.timelineAuthReady || !hasTimelineIdentity) {
+            return;
+        }
+
+        const requestKey = `${this.timelineKey}|${this.timelineAuthToken ?? ''}`;
+        if (this.requestedTimelineKey === requestKey) {
+            return;
+        }
+
+        this.requestedTimelineKey = requestKey;
+        this.initalPage();
     }
 
     ngAfterViewInit() {
@@ -659,9 +673,17 @@ export class AppGanttExampleComponent implements OnInit, AfterViewInit {
 
         link.href = url;
         link.download = fileName;
+        link.style.display = 'none';
+        document.body.appendChild(link);
         link.click();
 
-        URL.revokeObjectURL(url);
+        // Keep the object URL alive until the browser has consumed the click.
+        // Revoking synchronously can cancel blob downloads in some browsers and
+        // in the embedded timeline iframe.
+        window.setTimeout(() => {
+            link.remove();
+            URL.revokeObjectURL(url);
+        }, 0);
     }
 
     private escapeXml(value: string) {

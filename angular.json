@@ -154,6 +154,14 @@
           "options": {
             "buildTarget": "example:build"
           }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "example/src/test.ts",
+            "tsConfig": "example/tsconfig.spec.json",
+            "karmaConfig": "example/karma.conf.js"
+          }
         }
       }
     }
